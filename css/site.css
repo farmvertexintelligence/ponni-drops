@@ -290,7 +290,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--g
 .bubble::after { content: ''; position: absolute; right: -8px; top: 0; border-top: 10px solid #d9fdd3; border-right: 8px solid transparent; }
 
 /* ---------- Partner ---------- */
-.partner { background: linear-gradient(180deg, var(--mint-100), var(--mint-50)); }
+.partner { background: transparent; }
 .benefits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 30px; }
 .benefit { padding: 24px; border-radius: var(--radius); background: var(--white); border: 1px solid var(--line); box-shadow: var(--shadow); }
 .benefit p { color: var(--muted); margin: 0; font-size: .95rem; }
@@ -371,7 +371,6 @@ a.contact-card:hover { transform: translateY(-3px); background: rgba(255, 255, 2
   .head-actions { margin-left: auto; }
   .hero-grid { grid-template-columns: 1fr; gap: 24px; }
   .hero-art { height: 280px; }
-  .strip-row { grid-template-columns: repeat(2, 1fr); }
   .process { grid-template-columns: repeat(2, 1fr); }
   .lab, .about-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
@@ -388,8 +387,6 @@ a.contact-card:hover { transform: translateY(-3px); background: rgba(255, 255, 2
   .tabs { grid-template-columns: 1fr; }
   .tabs button > span:first-child { font-size: 1.5rem; }
   .benefits, .steps-row { grid-template-columns: 1fr; }
-  .strip-row { font-size: .82rem; }
-  .strip-row div { justify-content: flex-start; text-align: left; }
   .hero-points li { padding: 10px 14px; }
   .cta-row .btn { flex: 1 1 100%; }
   .logo-text small { display: none; }
@@ -398,4 +395,151 @@ a.contact-card:hover { transform: translateY(-3px); background: rgba(255, 255, 2
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
+}
+
+/* =====================================================================
+   Glass morphism, 3D and scroll effects, language switch
+   ===================================================================== */
+
+body { background: var(--mint-50); isolation: isolate; }
+body.lang-ta { font-family: 'Noto Sans Tamil', var(--font-body); }
+body.lang-ta h1, body.lang-ta h2, body.lang-ta h3, body.lang-ta legend,
+body.lang-ta .tabs b, body.lang-ta .preview-title { font-family: 'Noto Sans Tamil', var(--font-head); letter-spacing: 0; line-height: 1.3; }
+body.lang-ta .hero h1 { font-size: clamp(1.9rem, 4.2vw, 3.1rem); }
+body.lang-ta h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); }
+body.lang-ta .eyebrow { text-transform: none; letter-spacing: .02em; }
+body.lang-ta .hero .tamil { display: none; }
+
+/* Colour blobs drifting behind everything; the glass cards blur them. */
+.aurora { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.aurora span { position: absolute; width: 46vmax; height: 46vmax; border-radius: 50%; filter: blur(70px); opacity: .55; animation: drift 26s ease-in-out infinite alternate; }
+.aurora span:nth-child(1) { left: -12vmax; top: -10vmax; background: radial-gradient(circle, #9be8c6, transparent 65%); }
+.aurora span:nth-child(2) { right: -14vmax; top: 20vh; background: radial-gradient(circle, #8ee6dc, transparent 65%); animation-duration: 32s; animation-delay: -8s; }
+.aurora span:nth-child(3) { left: 20vw; bottom: -18vmax; background: radial-gradient(circle, #c4f2a6, transparent 65%); opacity: .4; animation-duration: 38s; }
+.aurora span:nth-child(4) { right: 20vw; top: -16vmax; width: 30vmax; height: 30vmax; background: radial-gradient(circle, #3cc289, transparent 65%); opacity: .3; animation-duration: 22s; }
+@keyframes drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6vw, 8vh, 0) scale(1.15); }
+  100% { transform: translate3d(-5vw, -4vh, 0) scale(.95); }
+}
+
+/* Frosted glass on light sections */
+.glass-light-card {
+  position: relative;
+  background: linear-gradient(145deg, rgba(255, 255, 255, .72), rgba(255, 255, 255, .42));
+  border: 1px solid rgba(255, 255, 255, .85);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .9) inset, 0 -1px 0 rgba(15, 90, 63, .06) inset, 0 18px 40px rgba(4, 32, 26, .10);
+  backdrop-filter: blur(18px) saturate(1.6);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+}
+/* Frosted glass on dark sections */
+.glass {
+  background: linear-gradient(145deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .04));
+  border: 1px solid rgba(255, 255, 255, .18);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .22) inset, 0 20px 50px rgba(0, 0, 0, .25);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+}
+.glass-dark { position: relative; overflow: hidden; border-radius: 28px; padding: 32px; color: var(--white); background: linear-gradient(150deg, rgba(20, 122, 82, .92), rgba(10, 61, 44, .9) 60%, rgba(4, 32, 26, .94)); border: 1px solid rgba(255, 255, 255, .2); box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, .3); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.glass-dark::before { content: ''; position: absolute; inset: 0 0 55%; background: linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, 0)); pointer-events: none; }
+
+.product.glass-light-card, .form-card.glass-light-card, .benefit.glass-light-card, .tabs.glass-light-card { background: linear-gradient(145deg, rgba(255, 255, 255, .72), rgba(255, 255, 255, .42)); border-color: rgba(255, 255, 255, .85); }
+.product .p-art { background: radial-gradient(240px 140px at 50% 100%, rgba(60, 194, 137, .3), transparent 70%), linear-gradient(180deg, rgba(228, 247, 238, .6), rgba(211, 241, 227, .35)); }
+.steps-row div.glass-light-card { border: 1px solid rgba(255, 255, 255, .85); }
+.qty { background: rgba(255, 255, 255, .55); }
+input, select, textarea { background: rgba(255, 255, 255, .7); }
+.modal-card { background: rgba(255, 255, 255, .86); backdrop-filter: blur(20px) saturate(1.5); -webkit-backdrop-filter: blur(20px) saturate(1.5); border: 1px solid rgba(255, 255, 255, .9); }
+.toast { background: rgba(10, 61, 44, .88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+
+/* 3D tilt with light glare */
+[data-tilt] { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transform-style: preserve-3d; transition: transform .5s cubic-bezier(.2, .8, .2, 1), box-shadow .3s ease; will-change: transform; }
+[data-tilt].tilting { transition: transform .08s linear, box-shadow .3s ease; box-shadow: 0 30px 60px rgba(4, 32, 26, .22); }
+.glare { position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s ease; background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, .45), rgba(255, 255, 255, 0) 55%); mix-blend-mode: soft-light; }
+[data-tilt].tilting .glare { opacity: 1; }
+.product .p-bottle { transform: translateZ(40px); transition: transform .5s ease; }
+.product.tilting .p-bottle { transform: translateZ(60px) scale(1.04); }
+.product .p-body { transform: translateZ(20px); }
+.process li.glass, .lab-card, .contact-card, .about-card, .phone { position: relative; }
+
+/* Reveal on scroll (only once JS is running; content stays visible without it) */
+.js [data-reveal] { opacity: 0; transform: translate3d(0, 36px, 0); transition: opacity .8s ease, transform .9s cubic-bezier(.2, .8, .2, 1); transition-delay: calc(var(--d, 0) * 90ms); }
+.js [data-reveal="left"] { transform: translate3d(-48px, 0, 0); }
+.js [data-reveal="right"] { transform: translate3d(48px, 0, 0); }
+.js [data-reveal="zoom"] { transform: scale(.88); }
+.js [data-reveal="flip"] { transform: perspective(900px) rotateX(24deg) translate3d(0, 40px, 0); transform-origin: 50% 100%; }
+.js [data-reveal].in { opacity: 1; transform: none; }
+.js [data-reveal][data-tilt].in { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
+.js [data-reveal].in[data-tilt].tilting { transition-delay: 0s; }
+
+/* Reading progress bar */
+.scroll-bar { position: fixed; left: 0; top: 0; z-index: 70; width: 100%; height: 3px; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, var(--mint-300), var(--aqua), var(--g-400)); box-shadow: 0 0 12px rgba(111, 224, 207, .7); pointer-events: none; }
+
+/* Language switch */
+.lang { display: inline-flex; padding: 3px; border-radius: 999px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .22); }
+.lang button { min-width: 44px; min-height: 34px; padding: 4px 12px; border: 0; border-radius: 999px; font: 700 .85rem var(--font-body); color: rgba(255, 255, 255, .8); background: transparent; cursor: pointer; }
+.lang button[lang="ta"] { font-family: 'Noto Sans Tamil', var(--font-body); }
+.lang button[aria-pressed="true"] { color: var(--g-900); background: linear-gradient(180deg, #fff, var(--mint-200)); box-shadow: 0 2px 8px rgba(0, 0, 0, .2); }
+
+/* Hero 3D stage */
+.stage-3d { position: absolute; inset: -6% -8% 0; z-index: 2; opacity: 0; transition: opacity 1s ease; -webkit-mask: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); mask: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); }
+.stage-3d canvas { display: block; width: 100% !important; height: 100% !important; }
+.hero.has-3d .stage-3d { opacity: 1; }
+.hero.has-3d .lineup, .hero.has-3d .ripple { display: none; }
+.drag-hint { display: none; position: absolute; left: 50%; bottom: 0; z-index: 3; transform: translateX(-50%); margin: 0; padding: 6px 14px; border-radius: 999px; font-size: .78rem; white-space: nowrap; color: var(--mint-200); background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.hero.has-3d .drag-hint { display: block; }
+.hero-points li.glass { border-radius: 16px; }
+.scroll-cue { position: absolute; left: 50%; bottom: 18px; z-index: 3; width: 26px; height: 42px; transform: translateX(-50%); border: 2px solid rgba(255, 255, 255, .5); border-radius: 14px; }
+.scroll-cue span { position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--mint-200); animation: cue 1.8s ease-in-out infinite; }
+@keyframes cue { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px); } }
+
+/* Trust strip as an endless marquee */
+.strip { overflow: hidden; }
+.marquee { position: relative; overflow: hidden; -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.marquee-track { display: flex; width: max-content; animation: marquee 32s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-set { display: flex; gap: 48px; padding: 18px 24px; }
+.marquee-set span { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; font-size: .98rem; }
+.marquee-set i { font-style: normal; font-size: 1.3rem; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* Quality: water flows down a line as you scroll; steps light up */
+.quality { position: relative; overflow: hidden; }
+.quality .wrap { position: relative; z-index: 1; }
+.flow { position: relative; --flow: 0; margin-bottom: 40px; }
+.flow-line { position: absolute; left: 0; right: 0; top: -18px; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, .1); overflow: visible; }
+.flow-fill { position: absolute; left: 0; top: 0; height: 100%; width: calc(var(--flow) * 100%); border-radius: 4px; background: linear-gradient(90deg, var(--g-400), var(--aqua)); box-shadow: 0 0 16px rgba(111, 224, 207, .8); }
+.flow-drop { position: absolute; top: -9px; left: calc(var(--flow) * 100%); width: 22px; height: 22px; margin-left: -11px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: radial-gradient(circle at 35% 35%, #fff, var(--aqua) 45%, var(--g-500)); box-shadow: 0 0 18px rgba(111, 224, 207, .9); }
+.flow .process { margin-bottom: 0; }
+.process li { transition: transform .6s cubic-bezier(.2, .8, .2, 1), box-shadow .5s ease, border-color .5s ease, background .5s ease, opacity .6s ease; opacity: .55; }
+.process li.lit { opacity: 1; border-color: rgba(143, 227, 189, .5); box-shadow: 0 0 0 1px rgba(143, 227, 189, .25), 0 22px 50px rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .25); }
+.process li.lit .step { animation: glow 2.4s ease-in-out infinite; }
+@keyframes glow { 50% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), 0 0 26px rgba(111, 224, 207, .9); } }
+.bubbles-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.bubbles-bg i { position: absolute; bottom: -40px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .55), rgba(143, 227, 189, .12) 60%, transparent 70%); border: 1px solid rgba(255, 255, 255, .18); animation: bubble linear infinite; }
+@keyframes bubble { 0% { transform: translate3d(0, 0, 0); opacity: 0; } 10% { opacity: 1; } 50% { transform: translate3d(14px, -60vh, 0); } 100% { transform: translate3d(-10px, -125vh, 0); opacity: 0; } }
+
+/* Small touches */
+.qty.bump { animation: bump .35s ease; }
+@keyframes bump { 40% { transform: scale(1.05); } }
+.hero-glow, .hero-copy { will-change: transform; }
+.contact .wrap { position: relative; z-index: 1; }
+
+@media (max-width: 860px) {
+  .js [data-reveal="left"], .js [data-reveal="right"] { transform: translate3d(0, 36px, 0); }
+  .head-actions .head-call { display: none; }
+  .stage-3d { inset: -4% -4% 0; }
+  .hero.has-3d .hero-art { order: -1; height: 330px; margin: 4px 0 -8px; }
+  .hero.has-3d .drag-hint { bottom: 6px; }
+  .flow-line { display: none; }
+  .process li { opacity: 1; }
+}
+@media (max-width: 600px) {
+  .lang button { min-width: 38px; padding: 4px 9px; }
+  .glass-light-card, .glass { backdrop-filter: blur(10px) saturate(1.4); -webkit-backdrop-filter: blur(10px) saturate(1.4); }
+  .scroll-cue { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] { opacity: 1; transform: none; }
+  .marquee-track { animation: none; }
+  .aurora span { animation: none; }
 }

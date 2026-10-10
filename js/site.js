@@ -1,12 +1,17 @@
 /*
- * Ponni Drops website: product drawings, the customer order form, the
- * dealership form, WhatsApp / call buttons and the "message ready" popup.
+ * Ponni Drops website: product drawings, English / Tamil switch, the
+ * customer order form, the dealership form, WhatsApp / call buttons, the
+ * "message ready" popup, and the scroll and 3D-tilt effects.
+ * The WebGL hero bottle is in scene3d.js.
  */
 (function () {
   'use strict';
 
+  document.documentElement.classList.add('js');
+
   const CFG = window.PONNI_SITE || {};
   const M = window.PonniMessages;
+  const I18N = window.PonniI18n;
   const $ = (sel, el) => (el || document).querySelector(sel);
   const $$ = (sel, el) => Array.from((el || document).querySelectorAll(sel));
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -65,25 +70,81 @@
     '20l': { h: 100, svg: can20 },
   };
 
-  function renderArt() {
+
+  /* ---------- Language ---------- */
+
+  let lang = 'en';
+  const english = new Map(); // element → its English text, read once from the page
+
+  function pickLang() {
+    const q = new URLSearchParams(location.search).get('lang');
+    if (q === 'ta' || q === 'en') return q;
+    try {
+      const saved = localStorage.getItem('ponni-lang');
+      if (saved === 'ta' || saved === 'en') return saved;
+    } catch (e) { /* storage blocked */ }
+    return /^ta\b/i.test(navigator.language || '') ? 'ta' : 'en';
+  }
+
+  const ui = () => I18N.UI[lang];
+
+  function applyLang(next, save) {
+    lang = next === 'ta' ? 'ta' : 'en';
+    document.documentElement.lang = lang;
+    document.body.classList.toggle('lang-ta', lang === 'ta');
+    const ta = I18N.ta;
+    const set = (attr, apply) => $$(`[${attr}]`).forEach((el) => {
+      const key = el.getAttribute(attr);
+      const id = el;
+      if (!english.has(id)) english.set(id, {});
+      const store = english.get(id);
+      if (!(attr in store)) store[attr] = apply(el);
+      const value = lang === 'ta' && ta[key] != null ? ta[key] : store[attr];
+      apply(el, value);
+    });
+    set('data-i18n', (el, v) => (v === undefined ? el.textContent : (el.textContent = v)));
+    set('data-i18n-html', (el, v) => (v === undefined ? el.innerHTML : (el.innerHTML = v)));
+    set('data-i18n-ph', (el, v) => (v === undefined ? el.placeholder : (el.placeholder = v)));
+    $$('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+    if (save) { try { localStorage.setItem('ponni-lang', lang); } catch (e) { /* storage blocked */ } }
+    renderProducts();
+    renderQtyLabels();
+    renderChips();
+    setupContactText();
+    refreshPreviews();
+    $$('.form-card').forEach((f) => $$('[data-err]', f).forEach((p) => { p.textContent = ''; }));
+  }
+
+  function setupLang() {
+    $$('[data-lang]').forEach((b) => b.addEventListener('click', () => applyLang(b.dataset.lang, true)));
+  }
+
+  /* ---------- Products ---------- */
+
+  const sizeName = (p) => (p.size === '1/2 L' ? ui().half : p.size);
+
+  function renderLineup() {
     const lineup = $('#hero-lineup');
-    if (lineup) {
-      lineup.innerHTML = M.PRODUCTS.map((p, i) =>
-        `<div class="lu-item" style="--h:${ART[p.id].h}%;--i:${i}">${ART[p.id].svg()}</div>`).join('');
-    }
+    lineup.innerHTML = M.PRODUCTS.map((p, i) =>
+      `<div class="lu-item" style="--h:${ART[p.id].h}%;--i:${i}">${ART[p.id].svg()}</div>`).join('');
+  }
+
+  function renderProducts() {
     const grid = $('#product-grid');
-    if (grid) {
-      grid.innerHTML = M.PRODUCTS.map((p) => `
-        <article class="product">
-          <div class="p-art"><div class="p-bottle" style="--h:${ART[p.id].h}%">${ART[p.id].svg()}</div></div>
-          <div class="p-body">
-            <h3>${esc(p.size === '1/2 L' ? '½ Litre' : p.size)}</h3>
-            <p class="pack">${esc(p.pack)}</p>
-            <p class="use">${esc(p.use)}</p>
-            <button type="button" class="btn btn-sm btn-gloss" data-add="${p.id}">Order this</button>
-          </div>
-        </article>`).join('');
-    }
+    const first = !grid.children.length;
+    grid.innerHTML = M.PRODUCTS.map((p, i) => `
+      <article class="product glass-light-card${first ? '' : ' in'}" data-reveal="flip" style="--d:${i % 3}" data-tilt>
+        <span class="glare" aria-hidden="true"></span>
+        <div class="p-art"><div class="p-bottle" style="--h:${ART[p.id].h}%">${ART[p.id].svg()}</div></div>
+        <div class="p-body">
+          <h3>${esc(sizeName(p))}</h3>
+          <p class="pack">${esc(p.pack[lang])}</p>
+          <p class="use">${esc(p.use[lang])}</p>
+          <button type="button" class="btn btn-sm btn-gloss" data-add="${p.id}">${esc(ui().orderThis)}</button>
+        </div>
+      </article>`).join('');
+    if (first) observeReveals(grid);
+    setupTilt(grid);
   }
 
   /* ---------- Contact links ---------- */
@@ -92,35 +153,38 @@
   const telNumber = String(CFG.phone || '').replace(/[^\d+]/g, '');
 
   function setupContact() {
-    const chatUrl = M.whatsappUrl(waNumber, 'Hello Ponni Drops, I would like to know more.');
-    $$('.js-wa-chat').forEach((a) => { a.href = chatUrl; });
-
     if (telNumber) {
       $$('.js-call').forEach((a) => { a.href = `tel:${telNumber}`; });
-      $$('.js-phone-label').forEach((el) => { el.textContent = CFG.phoneLabel || CFG.phone; });
     } else {
       // No phone number set yet: hide call buttons, keep the contact card as a note.
       $$('.js-call').forEach((a) => { if (!a.classList.contains('js-call-card')) a.hidden = true; });
       const card = $('.js-call-card');
       if (card) card.removeAttribute('href');
-      if (waNumber) $$('.js-wa-chat .js-phone-label').forEach((el) => { el.textContent = `+${waNumber}`; });
     }
-
     $('#contact-hours').textContent = CFG.hours || '';
+    $('#year').textContent = new Date().getFullYear();
+  }
+
+  // Parts of the contact details that change with the language.
+  function setupContactText() {
+    const chatUrl = M.whatsappUrl(waNumber, ui().waHello);
+    $$('.js-wa-chat').forEach((a) => { a.href = chatUrl; });
+    if (telNumber) $$('.js-phone-label').forEach((el) => { el.textContent = CFG.phoneLabel || CFG.phone; });
+    if (waNumber) $$('.js-wa-label').forEach((el) => { el.textContent = `+${waNumber}`; });
+
     const extra = [CFG.address && `📍 ${CFG.address}`, CFG.email && `✉️ ${CFG.email}`].filter(Boolean);
     if (extra.length || CFG.mapUrl) {
       const box = $('#contact-extra');
       box.innerHTML = extra.map(esc).join('<br>') +
-        (CFG.mapUrl ? `${extra.length ? '<br>' : ''}<a href="${esc(CFG.mapUrl)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>` : '');
+        (CFG.mapUrl ? `${extra.length ? '<br>' : ''}<a href="${esc(CFG.mapUrl)}" target="_blank" rel="noopener">${esc(ui().map)}</a>` : '');
       box.hidden = false;
     }
-    const lic = [CFG.fssai && `FSSAI Lic. No. ${CFG.fssai}`, CFG.bis && `BIS Licence ${CFG.bis}`].filter(Boolean);
+    const lic = [CFG.fssai && `${ui().fssai} ${CFG.fssai}`, CFG.bis && `${ui().bis} ${CFG.bis}`].filter(Boolean);
     if (lic.length) {
       const el = $('#licences');
       el.textContent = lic.join(' · ');
       el.hidden = false;
     }
-    $('#year').textContent = new Date().getFullYear();
   }
 
   /* ---------- Tabs ---------- */
@@ -134,6 +198,7 @@
     });
     $('#panel-customer').hidden = name !== 'customer';
     $('#panel-dealer').hidden = name !== 'dealer';
+    $$(`#panel-${name} [data-reveal]`).forEach((el) => el.classList.add('in'));
   }
 
   function setupTabs() {
@@ -184,9 +249,22 @@
     return esc(text).replace(/\*([^*\n]+)\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
   }
 
+  const previews = [];
+  function refreshPreviews() { previews.forEach((fn) => fn()); }
+
   /* ---------- Customer form ---------- */
 
   const qty = {};
+
+  function renderQtyLabels() {
+    M.PRODUCTS.forEach((p) => {
+      const box = $(`.qty[data-id="${p.id}"]`);
+      if (!box) return;
+      $('.qty-info b', box).textContent = sizeName(p);
+      $('.qty-info small', box).textContent = p.pack[lang];
+      $('input', box).setAttribute('aria-label', `${p.size} (${p.unit === 'can' ? ui().cans : ui().boxes})`);
+    });
+  }
 
   function setupCustomer() {
     const form = $('#customer-form');
@@ -194,11 +272,11 @@
     grid.innerHTML = M.PRODUCTS.map((p) => `
       <div class="qty" data-id="${p.id}">
         <div class="qty-art" style="--h:${ART[p.id].h}%">${ART[p.id].svg()}</div>
-        <div class="qty-info"><b>${esc(p.size)}</b><small>${esc(p.pack)}</small></div>
+        <div class="qty-info"><b></b><small></small></div>
         <div class="stepper">
-          <button type="button" data-step="-1" aria-label="One less ${esc(p.size)}">−</button>
-          <input type="number" inputmode="numeric" min="0" max="9999" value="0" aria-label="${esc(p.size)} quantity (${p.unit === 'can' ? 'cans' : 'boxes'})" data-qty="${p.id}">
-          <button type="button" data-step="1" aria-label="One more ${esc(p.size)}">+</button>
+          <button type="button" data-step="-1" aria-label="− ${esc(p.size)}">−</button>
+          <input type="number" inputmode="numeric" min="0" max="9999" value="0" data-qty="${p.id}">
+          <button type="button" data-step="1" aria-label="+ ${esc(p.size)}">+</button>
         </div>
       </div>`).join('');
 
@@ -207,6 +285,9 @@
       const box = $(`.qty[data-id="${id}"]`, grid);
       $('input', box).value = qty[id];
       box.classList.toggle('on', qty[id] > 0);
+      box.classList.remove('bump');
+      void box.offsetWidth; // restart the bump animation
+      box.classList.add('bump');
       $('#empties-field').hidden = !(qty['20l'] > 0);
       update();
     };
@@ -234,7 +315,7 @@
       showTab('customer');
       setQty(b.dataset.add, (qty[b.dataset.add] || 0) + 1);
       $('#order').scrollIntoView({ behavior: 'smooth' });
-      toast(`${M.PRODUCTS.find((p) => p.id === b.dataset.add).size} added to your order`);
+      toast(ui().added(sizeName(M.PRODUCTS.find((p) => p.id === b.dataset.add))));
     });
 
     const date = $('#c-date');
@@ -242,44 +323,51 @@
     date.min = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
 
     const data = () => Object.assign(readForm(form), { qty: Object.assign({}, qty) });
-    function update() { $('#customer-preview').innerHTML = toBubble(M.customerMessage(data(), 'PD-O-…')); }
+    function update() { $('#customer-preview').innerHTML = toBubble(M.customerMessage(data(), 'PD-O-…', lang)); }
+    previews.push(update);
     form.addEventListener('input', (e) => { if (!e.target.dataset.qty) update(); });
     form.addEventListener('change', update);
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const d = data();
-      const errors = M.validateCustomer(d);
+      const errors = M.validateCustomer(d, lang);
       showErrors(form, errors);
       if (Object.keys(errors).length) return;
       send('customer', d);
     });
-    copyButton('customer', () => M.customerMessage(data(), ''));
-    update();
+    copyButton('customer', () => M.customerMessage(data(), '', lang));
   }
 
   /* ---------- Dealer form ---------- */
 
+  function renderChips() {
+    const types = $('#dealer-types');
+    const chosen = ($('input[name="type"]:checked', types) || {}).value || 'dealer';
+    types.innerHTML = M.DEALER_TYPES.map((t) => `
+      <label class="chip"><input type="radio" name="type" value="${t.id}"${t.id === chosen ? ' checked' : ''}><span>${esc(t[lang])}</span></label>`).join('');
+    const sizes = $('#dealer-sizes');
+    if (!sizes.children.length) {
+      sizes.innerHTML = M.PRODUCTS.map((p) => `
+        <label class="chip"><input type="checkbox" value="${p.id}" data-size checked><span>${esc(p.size)}</span></label>`).join('');
+    }
+  }
+
   function setupDealer() {
     const form = $('#dealer-form');
-    $('#dealer-types').innerHTML = M.DEALER_TYPES.map((t, i) => `
-      <label class="chip"><input type="radio" name="type" value="${esc(t)}"${i === 0 ? ' checked' : ''}><span>${esc(t)}</span></label>`).join('');
-    $('#dealer-sizes').innerHTML = M.PRODUCTS.map((p) => `
-      <label class="chip"><input type="checkbox" value="${p.id}" data-size checked><span>${esc(p.size)}</span></label>`).join('');
-
     const data = () => Object.assign(readForm(form), { sizes: $$('[data-size]:checked', form).map((c) => c.value) });
-    const update = () => { $('#dealer-preview').innerHTML = toBubble(M.dealerMessage(data(), 'PD-D-…')); };
+    const update = () => { $('#dealer-preview').innerHTML = toBubble(M.dealerMessage(data(), 'PD-D-…', lang)); };
+    previews.push(update);
     form.addEventListener('input', update);
     form.addEventListener('change', update);
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const d = data();
-      const errors = M.validateDealer(d);
+      const errors = M.validateDealer(d, lang);
       showErrors(form, errors);
       if (Object.keys(errors).length) return;
       send('dealer', d);
     });
-    copyButton('dealer', () => M.dealerMessage(data(), ''));
-    update();
+    copyButton('dealer', () => M.dealerMessage(data(), '', lang));
   }
 
   /* ---------- Send / received ---------- */
@@ -288,13 +376,13 @@
 
   function send(kind, d) {
     const ref = M.makeRef(kind);
-    const text = kind === 'dealer' ? M.dealerMessage(d, ref) : M.customerMessage(d, ref);
+    const text = kind === 'dealer' ? M.dealerMessage(d, ref, lang) : M.customerMessage(d, ref, lang);
     const url = M.whatsappUrl(waNumber, text);
     window.open(url, '_blank', 'noopener');
 
     $('#sent-ref').textContent = ref;
     $('#sent-open').href = url;
-    $('#sent-title').textContent = kind === 'dealer' ? 'Enquiry ready in WhatsApp' : 'Order ready in WhatsApp';
+    $('#sent-title').textContent = kind === 'dealer' ? ui().sentDealer : ui().sentOrder;
     try { localStorage.setItem('ponni-last-ref', ref); } catch (e) { /* storage blocked: not needed */ }
     openModal();
   }
@@ -321,12 +409,11 @@
 
   function copyButton(kind, getText) {
     $(`[data-copy="${kind}"]`).addEventListener('click', async () => {
-      const text = getText();
       try {
-        await navigator.clipboard.writeText(text);
-        toast('Message copied');
+        await navigator.clipboard.writeText(getText());
+        toast(ui().copied);
       } catch (e) {
-        toast('Could not copy. Please select the text and copy.');
+        toast(ui().copyFail);
       }
     });
   }
@@ -343,12 +430,8 @@
   /* ---------- Header ---------- */
 
   function setupHeader() {
-    const head = $('.site-head');
     const btn = $('.menu-btn');
     const nav = $('#nav');
-    const onScroll = () => head.classList.toggle('scrolled', window.scrollY > 10);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
     btn.addEventListener('click', () => {
       const open = !nav.classList.contains('open');
       nav.classList.toggle('open', open);
@@ -359,11 +442,134 @@
     });
   }
 
-  renderArt();
-  setupContact();
-  setupHeader();
-  setupTabs();
+  /* ---------- Scroll effects ---------- */
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let revealObserver = null;
+
+  // Fade / slide / flip elements in as they scroll into view.
+  function observeReveals(root) {
+    const items = $$('[data-reveal]', root).filter((el) => !el.classList.contains('in'));
+    if (reduceMotion || !('IntersectionObserver' in window)) { items.forEach((el) => el.classList.add('in')); return; }
+    if (!revealObserver) {
+      revealObserver = new IntersectionObserver((entries) => entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('in'); revealObserver.unobserve(e.target); }
+      }), { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    }
+    items.forEach((el) => revealObserver.observe(el));
+  }
+
+  // Count numbers up when they first appear.
+  function setupCounters() {
+    const els = $$('[data-count]');
+    if (reduceMotion || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      const el = e.target;
+      const end = Number(el.dataset.count);
+      const suffix = el.dataset.suffix || '';
+      const t0 = performance.now();
+      const tick = (t) => {
+        const k = Math.min(1, (t - t0) / 1400);
+        el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))) + suffix;
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }), { threshold: 0.6 });
+    els.forEach((el) => io.observe(el));
+  }
+
+  // One scroll handler for: progress bar, header, parallax, quality flow line.
+  function setupScroll() {
+    const head = $('.site-head');
+    const bar = $('.scroll-bar');
+    const parallax = $$('[data-parallax]');
+    const flow = $('#flow');
+    const steps = $$('#flow .process li');
+    let ticking = false;
+
+    function onFrame() {
+      ticking = false;
+      const y = window.scrollY;
+      const vh = window.innerHeight;
+      const max = document.documentElement.scrollHeight - vh;
+      bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+      head.classList.toggle('scrolled', y > 10);
+      document.documentElement.style.setProperty('--scroll', String(y));
+
+      // Parallax only while the hero is on screen, and not on phones.
+      if (!reduceMotion && window.innerWidth > 860 && y < vh * 1.2) {
+        parallax.forEach((el) => {
+          const speed = Number(el.dataset.parallax) || 0;
+          el.style.transform = `translate3d(0, ${(y * speed).toFixed(1)}px, 0)`;
+        });
+      }
+
+      if (flow) {
+        const r = flow.getBoundingClientRect();
+        const p = Math.max(0, Math.min(1, (vh * 0.75 - r.top) / (r.height || 1)));
+        flow.style.setProperty('--flow', p.toFixed(3));
+        steps.forEach((li, i) => li.classList.toggle('lit', p >= (i + 0.35) / steps.length));
+      }
+    }
+    const request = () => { if (!ticking) { ticking = true; requestAnimationFrame(onFrame); } };
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', request);
+    onFrame();
+  }
+
+  // Cards lean towards the pointer in 3D, with a moving light glare.
+  function setupTilt(root) {
+    if (reduceMotion || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    $$('[data-tilt]', root).forEach((el) => {
+      if (el.dataset.tiltReady) return;
+      el.dataset.tiltReady = '1';
+      if (!$('.glare', el)) el.insertAdjacentHTML('afterbegin', '<span class="glare" aria-hidden="true"></span>');
+      el.addEventListener('pointermove', (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top) / r.height;
+        el.style.setProperty('--rx', `${((0.5 - y) * 10).toFixed(2)}deg`);
+        el.style.setProperty('--ry', `${((x - 0.5) * 12).toFixed(2)}deg`);
+        el.style.setProperty('--gx', `${(x * 100).toFixed(1)}%`);
+        el.style.setProperty('--gy', `${(y * 100).toFixed(1)}%`);
+        el.classList.add('tilting');
+      });
+      el.addEventListener('pointerleave', () => {
+        el.classList.remove('tilting');
+        el.style.setProperty('--rx', '0deg');
+        el.style.setProperty('--ry', '0deg');
+      });
+    });
+  }
+
+  // Bubbles rising behind the quality section.
+  function setupBubbles() {
+    const box = $('.bubbles-bg');
+    if (!box || reduceMotion) return;
+    box.innerHTML = Array.from({ length: 22 }, () => {
+      const s = 6 + Math.random() * 26;
+      return `<i style="left:${(Math.random() * 100).toFixed(1)}%;width:${s.toFixed(0)}px;height:${s.toFixed(0)}px;animation-duration:${(9 + Math.random() * 12).toFixed(1)}s;animation-delay:-${(Math.random() * 20).toFixed(1)}s"></i>`;
+    }).join('');
+  }
+
+  // Second copy of the trust strip so the marquee loops without a gap.
+  const set = $('.marquee-set');
+  if (set) { const copy = set.cloneNode(true); copy.setAttribute('aria-hidden', 'true'); set.after(copy); }
+
+  renderLineup();
   setupCustomer();
   setupDealer();
+  setupContact();
+  setupLang();
+  applyLang(pickLang(), false);
+  setupHeader();
+  setupTabs();
   setupModal();
+  observeReveals(document);
+  setupCounters();
+  setupScroll();
+  setupTilt(document);
+  setupBubbles();
 })();

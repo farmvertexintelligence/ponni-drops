@@ -12,11 +12,12 @@
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="css/site.css">
+  <link rel="modulepreload" href="js/vendor/three-0.160.0.module.min.js">
 </head>
 <body>
-  <!-- Shared gradients for every bottle drawing -->
+  <!-- Shared gradients for every flat bottle drawing -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
       <linearGradient id="g-water" x1="0" y1="0" x2="1" y2="0">
@@ -34,24 +35,32 @@
     </defs>
   </svg>
 
-  <a class="skip" href="#main">Skip to content</a>
+  <!-- Moving colour blobs behind the frosted-glass cards -->
+  <div class="aurora" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="scroll-bar" aria-hidden="true"></div>
+
+  <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
 
   <header class="site-head" id="top">
     <div class="wrap head-row">
       <a class="logo" href="#top" aria-label="Ponni Drops home">
         <img src="img/favicon.svg" alt="" width="36" height="36">
-        <span class="logo-text"><b>PONNI DROPS</b><small>by Sree Jeevan Minerals</small></span>
+        <span class="logo-text"><b>PONNI DROPS</b><small data-i18n="byline">by Sree Jeevan Minerals</small></span>
       </a>
       <nav class="nav" id="nav" aria-label="Main">
-        <a href="#products">Products</a>
-        <a href="#quality">Quality</a>
-        <a href="#order" data-tab="customer">Order</a>
-        <a href="#order" data-tab="dealer">Dealership</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+        <a href="#products" data-i18n="navProducts">Products</a>
+        <a href="#quality" data-i18n="navQuality">Quality</a>
+        <a href="#order" data-tab="customer" data-i18n="navOrder">Order</a>
+        <a href="#order" data-tab="dealer" data-i18n="navDealer">Dealership</a>
+        <a href="#about" data-i18n="navAbout">About</a>
+        <a href="#contact" data-i18n="navContact">Contact</a>
       </nav>
       <div class="head-actions">
-        <a class="btn btn-ghost btn-sm js-call" href="#contact"><span aria-hidden="true">📞</span> Call</a>
+        <div class="lang" role="group" aria-label="Language / மொழி">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="ta" aria-pressed="false" lang="ta">தமிழ்</button>
+        </div>
+        <a class="btn btn-ghost btn-sm js-call head-call" href="#contact"><span aria-hidden="true">📞</span> <span data-i18n="call">Call</span></a>
         <button type="button" class="menu-btn" aria-label="Open menu" aria-controls="nav" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
@@ -62,47 +71,55 @@
   <main id="main">
     <!-- HERO -->
     <section class="hero">
-      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-glow" data-parallax="-0.25" aria-hidden="true"></div>
       <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow"><span class="dot"></span> Packaged Drinking Water</p>
-          <h1>Pure as the river.<br><span class="shine">Trusted in every drop.</span></h1>
-          <p class="tamil" lang="ta">பொன்னி டிராப்ஸ்</p>
-          <p class="lead">Ponni Drops is purified through multiple stages, checked in our lab batch after batch, and sealed so it reaches you exactly as it left our plant. From a 300 ml bottle to the 20 L home can.</p>
-          <div class="cta-row">
-            <a class="btn btn-gloss" href="#order" data-tab="customer"><span aria-hidden="true">💧</span> Order water</a>
-            <a class="btn btn-glass" href="#order" data-tab="dealer"><span aria-hidden="true">🤝</span> Become a dealer</a>
+        <div class="hero-copy" data-parallax="0.12">
+          <p class="eyebrow" data-reveal><span class="dot"></span> <span data-i18n="heroEyebrow">Packaged Drinking Water</span></p>
+          <h1 data-reveal style="--d:1" data-i18n-html="heroTitle">Pure as the river.<br><span class="shine">Trusted in every drop.</span></h1>
+          <p class="tamil" lang="ta" data-reveal style="--d:2">பொன்னி டிராப்ஸ்</p>
+          <p class="lead" data-reveal style="--d:3" data-i18n="heroLead">Ponni Drops is purified through multiple stages, checked in our lab batch after batch, and sealed so it reaches you exactly as it left our plant. From a 300 ml bottle to the 20 L home can.</p>
+          <div class="cta-row" data-reveal style="--d:4">
+            <a class="btn btn-gloss" href="#order" data-tab="customer"><span aria-hidden="true">💧</span> <span data-i18n="ctaOrder">Order water</span></a>
+            <a class="btn btn-glass" href="#order" data-tab="dealer"><span aria-hidden="true">🤝</span> <span data-i18n="ctaDealer">Become a dealer</span></a>
           </div>
-          <ul class="hero-points">
-            <li><b>6</b><span>pack sizes</span></li>
-            <li><b>100%</b><span>batches lab-checked</span></li>
-            <li><b>Sealed</b><span>tamper-evident caps</span></li>
+          <ul class="hero-points" data-reveal style="--d:5">
+            <li class="glass"><b data-count="6">6</b><span data-i18n="ptSizes">pack sizes</span></li>
+            <li class="glass"><b data-count="100" data-suffix="%">100%</b><span data-i18n="ptLab">batches lab-checked</span></li>
+            <li class="glass"><b data-i18n="ptSealed">Sealed</b><span data-i18n="ptCaps">tamper-evident caps</span></li>
           </ul>
         </div>
         <div class="hero-art" aria-hidden="true">
+          <div class="stage-3d" id="hero-3d"></div>
           <div class="lineup" id="hero-lineup"></div>
           <div class="ripple"></div>
+          <p class="drag-hint" data-i18n="dragHint">Move your mouse or tilt your phone</p>
         </div>
       </div>
+      <a class="scroll-cue" href="#products" aria-label="Scroll down"><span></span></a>
     </section>
 
-    <!-- TRUST STRIP -->
+    <!-- TRUST STRIP (scrolling marquee) -->
     <section class="strip" aria-label="Why Ponni Drops">
-      <div class="wrap strip-row">
-        <div><span aria-hidden="true">🧪</span> Lab tested every batch</div>
-        <div><span aria-hidden="true">🔬</span> Multi-stage RO + UV + ozone</div>
-        <div><span aria-hidden="true">🔒</span> Sealed &amp; batch coded</div>
-        <div><span aria-hidden="true">🚚</span> Doorstep delivery</div>
+      <div class="marquee">
+        <div class="marquee-track">
+          <div class="marquee-set">
+            <span><i aria-hidden="true">🧪</i> <b data-i18n="s1">Lab tested every batch</b></span>
+            <span><i aria-hidden="true">🔬</i> <b data-i18n="s2">Multi-stage RO + UV + ozone</b></span>
+            <span><i aria-hidden="true">🔒</i> <b data-i18n="s3">Sealed &amp; batch coded</b></span>
+            <span><i aria-hidden="true">🚚</i> <b data-i18n="s4">Doorstep delivery</b></span>
+            <span><i aria-hidden="true">💧</i> <b data-i18n="s5">300 ml to 20 L</b></span>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- PRODUCTS -->
     <section class="section" id="products">
       <div class="wrap">
-        <header class="sec-head">
-          <p class="eyebrow dark"><span class="dot"></span> Our range</p>
-          <h2>One trusted water, six sizes</h2>
-          <p>The same purified Ponni Drops water in every pack, from a single serving to a full home can.</p>
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow dark"><span class="dot"></span> <span data-i18n="prodEyebrow">Our range</span></p>
+          <h2 data-i18n="prodTitle">One trusted water, six sizes</h2>
+          <p data-i18n="prodLead">The same purified Ponni Drops water in every pack, from a single serving to a full home can.</p>
         </header>
         <div class="products" id="product-grid"></div>
       </div>
@@ -110,37 +127,41 @@
 
     <!-- QUALITY -->
     <section class="section quality" id="quality">
+      <div class="bubbles-bg" aria-hidden="true"></div>
       <div class="wrap">
-        <header class="sec-head light">
-          <p class="eyebrow"><span class="dot"></span> Quality &amp; safety</p>
-          <h2>Built to a high standard, checked at every step</h2>
-          <p>Every drop of Ponni Drops goes through the same controlled process before it is released for sale.</p>
+        <header class="sec-head light" data-reveal>
+          <p class="eyebrow"><span class="dot"></span> <span data-i18n="qEyebrow">Quality &amp; safety</span></p>
+          <h2 data-i18n="qTitle">Built to a high standard, checked at every step</h2>
+          <p data-i18n="qLead">Every drop of Ponni Drops goes through the same controlled process before it is released for sale. Scroll to follow the water.</p>
         </header>
 
-        <ol class="process">
-          <li><span class="step">01</span><h3>Source &amp; pre-filter</h3><p>Raw water is drawn and passed through sand and activated-carbon filters to remove sediment, odour and chlorine.</p></li>
-          <li><span class="step">02</span><h3>Reverse osmosis</h3><p>RO membranes remove dissolved impurities, then the mineral balance is set for clean, pleasant taste.</p></li>
-          <li><span class="step">03</span><h3>UV &amp; ozonation</h3><p>Ultraviolet treatment and ozone disinfection keep the water safe all the way to the bottle.</p></li>
-          <li><span class="step">04</span><h3>Hygienic filling</h3><p>Bottles and cans are rinsed, filled and capped on our filling line in a clean, controlled area.</p></li>
-          <li><span class="step">05</span><h3>Seal &amp; batch code</h3><p>Every pack gets a tamper-evident cap and a batch code, so each bottle can be traced back to its test.</p></li>
-          <li><span class="step">06</span><h3>Lab release</h3><p>Samples from each batch are checked in our lab. Only batches that pass are sent out.</p></li>
-        </ol>
+        <div class="flow" id="flow">
+          <div class="flow-line" aria-hidden="true"><span class="flow-fill"></span><span class="flow-drop"></span></div>
+          <ol class="process">
+            <li class="glass" data-tilt><span class="step">01</span><h3 data-i18n="p1h">Source &amp; pre-filter</h3><p data-i18n="p1">Raw water is drawn and passed through sand and activated-carbon filters to remove sediment, odour and chlorine.</p></li>
+            <li class="glass" data-tilt><span class="step">02</span><h3 data-i18n="p2h">Reverse osmosis</h3><p data-i18n="p2">RO membranes remove dissolved impurities, then the mineral balance is set for clean, pleasant taste.</p></li>
+            <li class="glass" data-tilt><span class="step">03</span><h3 data-i18n="p3h">UV &amp; ozonation</h3><p data-i18n="p3">Ultraviolet treatment and ozone disinfection keep the water safe all the way to the bottle.</p></li>
+            <li class="glass" data-tilt><span class="step">04</span><h3 data-i18n="p4h">Hygienic filling</h3><p data-i18n="p4">Bottles and cans are rinsed, filled and capped on our filling line in a clean, controlled area.</p></li>
+            <li class="glass" data-tilt><span class="step">05</span><h3 data-i18n="p5h">Seal &amp; batch code</h3><p data-i18n="p5">Every pack gets a tamper-evident cap and a batch code, so each bottle can be traced back to its test.</p></li>
+            <li class="glass" data-tilt><span class="step">06</span><h3 data-i18n="p6h">Lab release</h3><p data-i18n="p6">Samples from each batch are checked in our lab. Only batches that pass are sent out.</p></li>
+          </ol>
+        </div>
 
         <div class="lab">
-          <div class="lab-card glass">
-            <h3><span aria-hidden="true">🧪</span> What our lab checks</h3>
+          <div class="lab-card glass" data-reveal="left" data-tilt>
+            <h3><span aria-hidden="true">🧪</span> <span data-i18n="labTitle">What our lab checks</span></h3>
             <ul class="checks">
-              <li>pH balance</li><li>TDS (dissolved solids)</li><li>Turbidity &amp; clarity</li><li>Taste &amp; odour</li>
-              <li>Microbiology (coliform, E. coli)</li><li>Chlorides &amp; hardness</li><li>Seal &amp; leak test</li><li>Fill volume</li>
+              <li data-i18n="c1">pH balance</li><li data-i18n="c2">TDS (dissolved solids)</li><li data-i18n="c3">Turbidity &amp; clarity</li><li data-i18n="c4">Taste &amp; odour</li>
+              <li data-i18n="c5">Microbiology (coliform, E. coli)</li><li data-i18n="c6">Chlorides &amp; hardness</li><li data-i18n="c7">Seal &amp; leak test</li><li data-i18n="c8">Fill volume</li>
             </ul>
           </div>
-          <div class="lab-card glass">
-            <h3><span aria-hidden="true">🛡️</span> Our promise</h3>
+          <div class="lab-card glass" data-reveal="right" data-tilt>
+            <h3><span aria-hidden="true">🛡️</span> <span data-i18n="promTitle">Our promise</span></h3>
             <ul class="promise">
-              <li>Processed to the norms for packaged drinking water in India</li>
-              <li>Food-grade PET bottles and cans</li>
-              <li>Clean, sanitised returnable 20 L cans</li>
-              <li>Staff trained in hygiene and safe handling</li>
+              <li data-i18n="pr1">Processed to the norms for packaged drinking water in India</li>
+              <li data-i18n="pr2">Food-grade PET bottles and cans</li>
+              <li data-i18n="pr3">Clean, sanitised returnable 20 L cans</li>
+              <li data-i18n="pr4">Staff trained in hygiene and safe handling</li>
             </ul>
             <p class="licences" id="licences" hidden></p>
           </div>
@@ -151,137 +172,141 @@
     <!-- ORDER / DEALERSHIP -->
     <section class="section" id="order">
       <div class="wrap">
-        <header class="sec-head">
-          <p class="eyebrow dark"><span class="dot"></span> Order on WhatsApp</p>
-          <h2>How can we help you?</h2>
-          <p>Fill in a few details. We type the message for you, and WhatsApp opens with it ready. Just press <b>Send</b>.</p>
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow dark"><span class="dot"></span> <span data-i18n="oEyebrow">Order on WhatsApp</span></p>
+          <h2 data-i18n="oTitle">How can we help you?</h2>
+          <p data-i18n-html="oLead">Fill in a few details. We type the message for you, and WhatsApp opens with it ready. Just press <b>Send</b>.</p>
         </header>
 
-        <div class="tabs" role="tablist" aria-label="Choose what you need">
+        <div class="tabs glass-light-card" role="tablist" aria-label="Choose what you need" data-reveal>
           <button type="button" role="tab" id="tab-customer" aria-controls="panel-customer" aria-selected="true" data-tab="customer">
-            <span aria-hidden="true">💧</span><span><b>I want water</b><small>Home, office, shop or event</small></span>
+            <span aria-hidden="true">💧</span><span><b data-i18n="tabWater">I want water</b><small data-i18n="tabWaterSub">Home, office, shop or event</small></span>
           </button>
           <button type="button" role="tab" id="tab-dealer" aria-controls="panel-dealer" aria-selected="false" data-tab="dealer" tabindex="-1">
-            <span aria-hidden="true">🤝</span><span><b>Become a dealer</b><small>Dealer, distributor or seller</small></span>
+            <span aria-hidden="true">🤝</span><span><b data-i18n="tabDealer">Become a dealer</b><small data-i18n="tabDealerSub">Dealer, distributor or seller</small></span>
           </button>
         </div>
 
         <!-- Customer -->
         <div class="panel" role="tabpanel" id="panel-customer" aria-labelledby="tab-customer">
-          <form class="form-card" id="customer-form" novalidate>
+          <form class="form-card glass-light-card" id="customer-form" novalidate data-reveal="left">
             <fieldset>
-              <legend><span class="num">1</span> Choose your water</legend>
+              <legend><span class="num">1</span> <span data-i18n="cStep1">Choose your water</span></legend>
               <div class="qty-grid" id="qty-grid"></div>
               <p class="err" data-err="qty" role="alert"></p>
               <div class="field empties" id="empties-field" hidden>
-                <label for="c-empties">Empty 20 L cans you will return</label>
+                <label for="c-empties" data-i18n="cEmpties">Empty 20 L cans you will return</label>
                 <input id="c-empties" name="empties" type="number" inputmode="numeric" min="0" max="999" value="0">
               </div>
             </fieldset>
 
             <fieldset>
-              <legend><span class="num">2</span> Your details</legend>
+              <legend><span class="num">2</span> <span data-i18n="cStep2">Your details</span></legend>
               <div class="grid-2">
-                <div class="field"><label for="c-name">Your name *</label><input id="c-name" name="name" autocomplete="name" required><p class="err" data-err="name"></p></div>
-                <div class="field"><label for="c-phone">Mobile number *</label><input id="c-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="98765 43210" required><p class="err" data-err="phone"></p></div>
+                <div class="field"><label for="c-name" data-i18n="fName">Your name *</label><input id="c-name" name="name" autocomplete="name" required><p class="err" data-err="name"></p></div>
+                <div class="field"><label for="c-phone" data-i18n="fPhone">Mobile number *</label><input id="c-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="98765 43210" required><p class="err" data-err="phone"></p></div>
               </div>
-              <div class="field"><label for="c-address">Delivery address *</label><textarea id="c-address" name="address" rows="2" autocomplete="street-address" placeholder="Door no., street, landmark" required></textarea><p class="err" data-err="address"></p></div>
+              <div class="field"><label for="c-address" data-i18n="cAddress">Delivery address *</label><textarea id="c-address" name="address" rows="2" autocomplete="street-address" placeholder="Door no., street, landmark" data-i18n-ph="cAddressPh" required></textarea><p class="err" data-err="address"></p></div>
               <div class="grid-2">
-                <div class="field"><label for="c-area">Area / Pincode</label><input id="c-area" name="area" autocomplete="postal-code"></div>
-                <div class="field"><label for="c-kind">Water for</label>
-                  <select id="c-kind" name="kind"><option>Home</option><option>Office</option><option>Shop / Hotel</option><option>Function / Event</option><option>School / Hospital</option></select>
+                <div class="field"><label for="c-area" data-i18n="cArea">Area / Pincode</label><input id="c-area" name="area" autocomplete="postal-code"></div>
+                <div class="field"><label for="c-kind" data-i18n="cKind">Water for</label>
+                  <select id="c-kind" name="kind">
+                    <option data-i18n="k1">Home</option><option data-i18n="k2">Office</option><option data-i18n="k3">Shop / Hotel</option><option data-i18n="k4">Function / Event</option><option data-i18n="k5">School / Hospital</option>
+                  </select>
                 </div>
               </div>
             </fieldset>
 
             <fieldset>
-              <legend><span class="num">3</span> When should we deliver?</legend>
+              <legend><span class="num">3</span> <span data-i18n="cStep3">When should we deliver?</span></legend>
               <div class="grid-2">
-                <div class="field"><label for="c-date">Delivery date</label><input id="c-date" name="date" type="date"></div>
-                <div class="field"><label for="c-slot">Time</label>
-                  <select id="c-slot" name="slot"><option value="">Any time</option><option>Morning (7 – 11 am)</option><option>Afternoon (11 am – 4 pm)</option><option>Evening (4 – 8 pm)</option></select>
+                <div class="field"><label for="c-date" data-i18n="cDate">Delivery date</label><input id="c-date" name="date" type="date"></div>
+                <div class="field"><label for="c-slot" data-i18n="cSlot">Time</label>
+                  <select id="c-slot" name="slot">
+                    <option value="" data-i18n="t0">Any time</option><option data-i18n="t1">Morning (7 – 11 am)</option><option data-i18n="t2">Afternoon (11 am – 4 pm)</option><option data-i18n="t3">Evening (4 – 8 pm)</option>
+                  </select>
                 </div>
               </div>
-              <div class="field"><label for="c-note">Anything else?</label><textarea id="c-note" name="note" rows="2" placeholder="e.g. Call before coming, 2nd floor"></textarea></div>
+              <div class="field"><label for="c-note" data-i18n="cNote">Anything else?</label><textarea id="c-note" name="note" rows="2" placeholder="e.g. Call before coming, 2nd floor" data-i18n-ph="cNotePh"></textarea></div>
             </fieldset>
 
             <div class="send-row">
-              <button type="submit" class="btn btn-wa"><span aria-hidden="true" class="wa-ico"></span> Send order on WhatsApp</button>
-              <a class="btn btn-ghost js-call" href="#contact"><span aria-hidden="true">📞</span> Call to order</a>
+              <button type="submit" class="btn btn-wa"><span aria-hidden="true" class="wa-ico"></span> <span data-i18n="cSend">Send order on WhatsApp</span></button>
+              <a class="btn btn-ghost js-call" href="#contact"><span aria-hidden="true">📞</span> <span data-i18n="cCall">Call to order</span></a>
             </div>
           </form>
 
-          <aside class="preview" aria-label="Message preview">
-            <p class="preview-title">Your WhatsApp message</p>
-            <div class="phone">
-              <div class="phone-top"><img src="img/favicon.svg" alt="" width="28" height="28"><span><b>Ponni Drops</b><small>Orders</small></span></div>
+          <aside class="preview" aria-label="Message preview" data-reveal="right">
+            <p class="preview-title" data-i18n="previewTitle">Your WhatsApp message</p>
+            <div class="phone" data-tilt>
+              <div class="phone-top"><img src="img/favicon.svg" alt="" width="28" height="28"><span><b>Ponni Drops</b><small data-i18n="pvOrders">Orders</small></span></div>
               <div class="chat"><div class="bubble" id="customer-preview"></div></div>
             </div>
-            <button type="button" class="btn btn-ghost btn-sm" data-copy="customer"><span aria-hidden="true">📋</span> Copy message</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-copy="customer"><span aria-hidden="true">📋</span> <span data-i18n="copy">Copy message</span></button>
           </aside>
         </div>
 
         <!-- Dealer -->
         <div class="panel" role="tabpanel" id="panel-dealer" aria-labelledby="tab-dealer" hidden>
-          <form class="form-card" id="dealer-form" novalidate>
+          <form class="form-card glass-light-card" id="dealer-form" novalidate>
             <fieldset>
-              <legend><span class="num">1</span> How would you like to partner?</legend>
+              <legend><span class="num">1</span> <span data-i18n="dStep1">How would you like to partner?</span></legend>
               <div class="chips" id="dealer-types" role="radiogroup" aria-label="Partner type"></div>
               <p class="err" data-err="type"></p>
             </fieldset>
 
             <fieldset>
-              <legend><span class="num">2</span> About you</legend>
+              <legend><span class="num">2</span> <span data-i18n="dStep2">About you</span></legend>
               <div class="grid-2">
-                <div class="field"><label for="d-name">Your name *</label><input id="d-name" name="name" autocomplete="name" required><p class="err" data-err="name"></p></div>
-                <div class="field"><label for="d-phone">Mobile number *</label><input id="d-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="98765 43210" required><p class="err" data-err="phone"></p></div>
+                <div class="field"><label for="d-name" data-i18n="fName">Your name *</label><input id="d-name" name="name" autocomplete="name" required><p class="err" data-err="name"></p></div>
+                <div class="field"><label for="d-phone" data-i18n="fPhone">Mobile number *</label><input id="d-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="98765 43210" required><p class="err" data-err="phone"></p></div>
               </div>
               <div class="grid-2">
-                <div class="field"><label for="d-business">Business / shop name</label><input id="d-business" name="business" autocomplete="organization"></div>
-                <div class="field"><label for="d-city">Town / District *</label><input id="d-city" name="city" autocomplete="address-level2" required><p class="err" data-err="city"></p></div>
+                <div class="field"><label for="d-business" data-i18n="dBusiness">Business / shop name</label><input id="d-business" name="business" autocomplete="organization"></div>
+                <div class="field"><label for="d-city" data-i18n="dCity">Town / District *</label><input id="d-city" name="city" autocomplete="address-level2" required><p class="err" data-err="city"></p></div>
               </div>
-              <div class="field"><label for="d-areas">Areas you can cover</label><input id="d-areas" name="areas" placeholder="e.g. My town and nearby villages"></div>
-              <div class="field"><label for="d-current">Your current business</label><input id="d-current" name="current" placeholder="e.g. Provision store, beverage agency, new business"></div>
+              <div class="field"><label for="d-areas" data-i18n="dAreas">Areas you can cover</label><input id="d-areas" name="areas" placeholder="e.g. My town and nearby villages" data-i18n-ph="dAreasPh"></div>
+              <div class="field"><label for="d-current" data-i18n="dCurrent">Your current business</label><input id="d-current" name="current" placeholder="e.g. Provision store, beverage agency, new business" data-i18n-ph="dCurrentPh"></div>
             </fieldset>
 
             <fieldset>
-              <legend><span class="num">3</span> Setup &amp; plans</legend>
+              <legend><span class="num">3</span> <span data-i18n="dStep3">Setup &amp; plans</span></legend>
               <div class="grid-2">
-                <div class="field"><label for="d-storage">Godown / storage space</label>
-                  <select id="d-storage" name="storage"><option value="">Choose…</option><option>Yes – own godown</option><option>Yes – rented godown</option><option>Shop space only</option><option>Not yet</option></select>
+                <div class="field"><label for="d-storage" data-i18n="dStorage">Godown / storage space</label>
+                  <select id="d-storage" name="storage"><option value="" data-i18n="choose">Choose…</option><option data-i18n="st1">Yes – own godown</option><option data-i18n="st2">Yes – rented godown</option><option data-i18n="st3">Shop space only</option><option data-i18n="st4">Not yet</option></select>
                 </div>
-                <div class="field"><label for="d-vehicle">Delivery vehicle</label>
-                  <select id="d-vehicle" name="vehicle"><option value="">Choose…</option><option>Yes – goods auto / pickup</option><option>Yes – van / truck</option><option>Two-wheeler only</option><option>No – need help</option></select>
+                <div class="field"><label for="d-vehicle" data-i18n="dVehicle">Delivery vehicle</label>
+                  <select id="d-vehicle" name="vehicle"><option value="" data-i18n="choose">Choose…</option><option data-i18n="v1">Yes – goods auto / pickup</option><option data-i18n="v2">Yes – van / truck</option><option data-i18n="v3">Two-wheeler only</option><option data-i18n="v4">No – need help</option></select>
                 </div>
               </div>
               <div class="field">
-                <span class="label">Sizes you want to sell</span>
+                <span class="label" data-i18n="dSizes">Sizes you want to sell</span>
                 <div class="chips" id="dealer-sizes"></div>
               </div>
               <div class="grid-2">
-                <div class="field"><label for="d-volume">Expected monthly sale</label>
-                  <select id="d-volume" name="volume"><option value="">Choose…</option><option>Up to 100 boxes / cans</option><option>100 – 500 boxes / cans</option><option>500 – 1,000 boxes / cans</option><option>Over 1,000 boxes / cans</option></select>
+                <div class="field"><label for="d-volume" data-i18n="dVolume">Expected monthly sale</label>
+                  <select id="d-volume" name="volume"><option value="" data-i18n="choose">Choose…</option><option data-i18n="vo1">Up to 100 boxes / cans</option><option data-i18n="vo2">100 – 500 boxes / cans</option><option data-i18n="vo3">500 – 1,000 boxes / cans</option><option data-i18n="vo4">Over 1,000 boxes / cans</option></select>
                 </div>
-                <div class="field"><label for="d-investment">Planned investment</label>
-                  <select id="d-investment" name="investment"><option value="">Choose…</option><option>Under ₹1 lakh</option><option>₹1 – 3 lakh</option><option>₹3 – 5 lakh</option><option>Above ₹5 lakh</option></select>
+                <div class="field"><label for="d-investment" data-i18n="dInvest">Planned investment</label>
+                  <select id="d-investment" name="investment"><option value="" data-i18n="choose">Choose…</option><option data-i18n="in1">Under ₹1 lakh</option><option data-i18n="in2">₹1 – 3 lakh</option><option data-i18n="in3">₹3 – 5 lakh</option><option data-i18n="in4">Above ₹5 lakh</option></select>
                 </div>
               </div>
-              <div class="field"><label for="d-note">Message</label><textarea id="d-note" name="note" rows="2" placeholder="Anything you would like to ask us"></textarea></div>
+              <div class="field"><label for="d-note" data-i18n="dNote">Message</label><textarea id="d-note" name="note" rows="2" placeholder="Anything you would like to ask us" data-i18n-ph="dNotePh"></textarea></div>
             </fieldset>
 
             <div class="send-row">
-              <button type="submit" class="btn btn-wa"><span aria-hidden="true" class="wa-ico"></span> Send enquiry on WhatsApp</button>
-              <a class="btn btn-ghost js-call" href="#contact"><span aria-hidden="true">📞</span> Call our sales team</a>
+              <button type="submit" class="btn btn-wa"><span aria-hidden="true" class="wa-ico"></span> <span data-i18n="dSend">Send enquiry on WhatsApp</span></button>
+              <a class="btn btn-ghost js-call" href="#contact"><span aria-hidden="true">📞</span> <span data-i18n="dCall">Call our sales team</span></a>
             </div>
           </form>
 
           <aside class="preview" aria-label="Message preview">
-            <p class="preview-title">Your WhatsApp message</p>
-            <div class="phone">
-              <div class="phone-top"><img src="img/favicon.svg" alt="" width="28" height="28"><span><b>Ponni Drops</b><small>Dealer desk</small></span></div>
+            <p class="preview-title" data-i18n="previewTitle">Your WhatsApp message</p>
+            <div class="phone" data-tilt>
+              <div class="phone-top"><img src="img/favicon.svg" alt="" width="28" height="28"><span><b>Ponni Drops</b><small data-i18n="pvDealer">Dealer desk</small></span></div>
               <div class="chat"><div class="bubble" id="dealer-preview"></div></div>
             </div>
-            <button type="button" class="btn btn-ghost btn-sm" data-copy="dealer"><span aria-hidden="true">📋</span> Copy message</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-copy="dealer"><span aria-hidden="true">📋</span> <span data-i18n="copy">Copy message</span></button>
           </aside>
         </div>
       </div>
@@ -290,45 +315,45 @@
     <!-- WHY PARTNER -->
     <section class="section partner" id="dealership">
       <div class="wrap">
-        <header class="sec-head">
-          <p class="eyebrow dark"><span class="dot"></span> Dealership</p>
-          <h2>Grow with Ponni Drops</h2>
-          <p>Water is an everyday need. Partner with a brand built on quality and steady supply.</p>
+        <header class="sec-head" data-reveal>
+          <p class="eyebrow dark"><span class="dot"></span> <span data-i18n="navDealer">Dealership</span></p>
+          <h2 data-i18n="bTitle">Grow with Ponni Drops</h2>
+          <p data-i18n="bLead">Water is an everyday need. Partner with a brand built on quality and steady supply.</p>
         </header>
         <div class="benefits">
-          <article class="benefit"><span class="b-ico" aria-hidden="true">📈</span><h3>Good margins</h3><p>Dealer prices that leave room for a healthy margin on every box and can.</p></article>
-          <article class="benefit"><span class="b-ico" aria-hidden="true">🏭</span><h3>Steady supply</h3><p>Direct from our own plant, on a delivery schedule you can plan around.</p></article>
-          <article class="benefit"><span class="b-ico" aria-hidden="true">📣</span><h3>Brand support</h3><p>Posters, display material and help to introduce Ponni Drops in your area.</p></article>
-          <article class="benefit"><span class="b-ico" aria-hidden="true">🤝</span><h3>Direct contact</h3><p>Talk straight to the company for orders, can returns and accounts.</p></article>
+          <article class="benefit glass-light-card" data-reveal="flip" style="--d:0" data-tilt><span class="b-ico" aria-hidden="true">📈</span><h3 data-i18n="b1h">Good margins</h3><p data-i18n="b1">Dealer prices that leave room for a healthy margin on every box and can.</p></article>
+          <article class="benefit glass-light-card" data-reveal="flip" style="--d:1" data-tilt><span class="b-ico" aria-hidden="true">🏭</span><h3 data-i18n="b2h">Steady supply</h3><p data-i18n="b2">Direct from our own plant, on a delivery schedule you can plan around.</p></article>
+          <article class="benefit glass-light-card" data-reveal="flip" style="--d:2" data-tilt><span class="b-ico" aria-hidden="true">📣</span><h3 data-i18n="b3h">Brand support</h3><p data-i18n="b3">Posters, display material and help to introduce Ponni Drops in your area.</p></article>
+          <article class="benefit glass-light-card" data-reveal="flip" style="--d:3" data-tilt><span class="b-ico" aria-hidden="true">🤝</span><h3 data-i18n="b4h">Direct contact</h3><p data-i18n="b4">Talk straight to the company for orders, can returns and accounts.</p></article>
         </div>
         <div class="steps-row">
-          <div><b>1</b> Send your enquiry</div>
-          <div><b>2</b> We call you back</div>
-          <div><b>3</b> Visit &amp; agreement</div>
-          <div><b>4</b> First stock delivered</div>
+          <div class="glass-light-card" data-reveal style="--d:0"><b>1</b> <span data-i18n="j1">Send your enquiry</span></div>
+          <div class="glass-light-card" data-reveal style="--d:1"><b>2</b> <span data-i18n="j2">We call you back</span></div>
+          <div class="glass-light-card" data-reveal style="--d:2"><b>3</b> <span data-i18n="j3">Visit &amp; agreement</span></div>
+          <div class="glass-light-card" data-reveal style="--d:3"><b>4</b> <span data-i18n="j4">First stock delivered</span></div>
         </div>
-        <div class="center"><a class="btn btn-gloss" href="#order" data-tab="dealer"><span aria-hidden="true">🤝</span> Apply for dealership</a></div>
+        <div class="center" data-reveal><a class="btn btn-gloss" href="#order" data-tab="dealer"><span aria-hidden="true">🤝</span> <span data-i18n="bApply">Apply for dealership</span></a></div>
       </div>
     </section>
 
     <!-- ABOUT -->
     <section class="section about" id="about">
       <div class="wrap about-grid">
-        <div>
-          <p class="eyebrow dark"><span class="dot"></span> About us</p>
-          <h2>Ponni Drops is a brand of <span class="nowrap">Sree Jeevan Minerals</span></h2>
-          <p>Sree Jeevan Minerals manufactures, packs and sells packaged drinking water. Ponni Drops is our flagship brand, carrying the name of the Ponni, the river that has given life to this land for generations.</p>
-          <p>We run our own purification and filling plant and our own delivery, so we answer for every bottle from the first filter to your doorstep.</p>
+        <div data-reveal="left">
+          <p class="eyebrow dark"><span class="dot"></span> <span data-i18n="aEyebrow">About us</span></p>
+          <h2 data-i18n-html="aTitle">Ponni Drops is a brand of <span class="nowrap">Sree Jeevan Minerals</span></h2>
+          <p data-i18n="a1">Sree Jeevan Minerals manufactures, packs and sells packaged drinking water. Ponni Drops is our flagship brand, carrying the name of the Ponni, the river that has given life to this land for generations.</p>
+          <p data-i18n="a2">We run our own purification and filling plant and our own delivery, so we answer for every bottle from the first filter to your doorstep.</p>
         </div>
-        <div class="about-card glass-light">
+        <div class="about-card glass-dark" data-reveal="right" data-tilt>
           <div class="parent">
-            <small>Parent company</small>
+            <small data-i18n="aParent">Parent company</small>
             <b>SREE JEEVAN MINERALS</b>
-            <span>Manufacturing · Packaging · Distribution</span>
+            <span data-i18n="aWhat">Manufacturing · Packaging · Distribution</span>
           </div>
           <div class="brand-mark">
             <img src="img/favicon.svg" alt="" width="64" height="64">
-            <span><b>PONNI DROPS</b><small>Packaged Drinking Water</small></span>
+            <span><b>PONNI DROPS</b><small data-i18n="heroEyebrow">Packaged Drinking Water</small></span>
           </div>
         </div>
       </div>
@@ -337,23 +362,23 @@
     <!-- CONTACT -->
     <section class="section contact" id="contact">
       <div class="wrap">
-        <header class="sec-head light">
-          <p class="eyebrow"><span class="dot"></span> Contact</p>
-          <h2>Talk to us</h2>
-          <p>Order water, ask about dealership, or check on a delivery.</p>
+        <header class="sec-head light" data-reveal>
+          <p class="eyebrow"><span class="dot"></span> <span data-i18n="navContact">Contact</span></p>
+          <h2 data-i18n="ctTitle">Talk to us</h2>
+          <p data-i18n="ctLead">Order water, ask about dealership, or check on a delivery.</p>
         </header>
         <div class="contact-grid">
-          <a class="contact-card glass js-wa-chat" href="#order" target="_blank" rel="noopener">
+          <a class="contact-card glass js-wa-chat" href="#order" target="_blank" rel="noopener" data-reveal="zoom" style="--d:0" data-tilt>
             <span class="c-ico wa" aria-hidden="true"><span class="wa-ico"></span></span>
-            <b>WhatsApp</b><span class="js-phone-label">Chat with us</span>
+            <b>WhatsApp</b><span class="js-wa-label" data-i18n="ctChat">Chat with us</span>
           </a>
-          <a class="contact-card glass js-call js-call-card" href="#contact">
+          <a class="contact-card glass js-call js-call-card" href="#contact" data-reveal="zoom" style="--d:1" data-tilt>
             <span class="c-ico" aria-hidden="true">📞</span>
-            <b>Call</b><span class="js-phone-label">Phone number coming soon</span>
+            <b data-i18n="call">Call</b><span class="js-phone-label" data-i18n="ctSoon">Phone number coming soon</span>
           </a>
-          <div class="contact-card glass" id="contact-info">
+          <div class="contact-card glass" id="contact-info" data-reveal="zoom" style="--d:2" data-tilt>
             <span class="c-ico" aria-hidden="true">🕘</span>
-            <b>Hours</b><span id="contact-hours"></span>
+            <b data-i18n="ctHours">Hours</b><span id="contact-hours"></span>
           </div>
         </div>
         <p class="contact-extra" id="contact-extra" hidden></p>
@@ -365,10 +390,10 @@
     <div class="wrap foot-row">
       <div class="logo">
         <img src="img/favicon.svg" alt="" width="32" height="32">
-        <span class="logo-text"><b>PONNI DROPS</b><small>A brand of Sree Jeevan Minerals</small></span>
+        <span class="logo-text"><b>PONNI DROPS</b><small data-i18n="fBrand">A brand of Sree Jeevan Minerals</small></span>
       </div>
-      <nav aria-label="Footer"><a href="#products">Products</a><a href="#quality">Quality</a><a href="#order" data-tab="customer">Order</a><a href="#order" data-tab="dealer">Dealership</a></nav>
-      <p class="copy">© <span id="year"></span> Sree Jeevan Minerals. All rights reserved.</p>
+      <nav aria-label="Footer"><a href="#products" data-i18n="navProducts">Products</a><a href="#quality" data-i18n="navQuality">Quality</a><a href="#order" data-tab="customer" data-i18n="navOrder">Order</a><a href="#order" data-tab="dealer" data-i18n="navDealer">Dealership</a></nav>
+      <p class="copy">© <span id="year"></span> Sree Jeevan Minerals. <span data-i18n="rights">All rights reserved.</span></p>
     </div>
   </footer>
 
@@ -382,13 +407,13 @@
   <div class="modal" id="sent-modal" hidden>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="sent-title">
       <div class="tick" aria-hidden="true">✓</div>
-      <h2 id="sent-title">Message ready in WhatsApp</h2>
-      <p id="sent-text">WhatsApp has opened with your message typed in. Press <b>Send ➤</b> there and it reaches us straight away. We reply on WhatsApp to confirm.</p>
-      <p class="ref">Your reference: <b id="sent-ref"></b></p>
+      <h2 id="sent-title"></h2>
+      <p data-i18n-html="sentText">WhatsApp has opened with your message typed in. Press <b>Send ➤</b> there and it reaches us straight away. We reply on WhatsApp to confirm.</p>
+      <p class="ref"><span data-i18n="sentRef">Your reference:</span> <b id="sent-ref"></b></p>
       <div class="modal-actions">
-        <a class="btn btn-wa" id="sent-open" href="#" target="_blank" rel="noopener"><span aria-hidden="true" class="wa-ico"></span> WhatsApp did not open? Tap here</a>
-        <a class="btn btn-ghost js-call" href="#contact"><span aria-hidden="true">📞</span> Call us instead</a>
-        <button type="button" class="btn btn-plain" data-close>Done</button>
+        <a class="btn btn-wa" id="sent-open" href="#" target="_blank" rel="noopener"><span aria-hidden="true" class="wa-ico"></span> <span data-i18n="sentAgain">WhatsApp did not open? Tap here</span></a>
+        <a class="btn btn-ghost js-call" href="#contact"><span aria-hidden="true">📞</span> <span data-i18n="sentCall">Call us instead</span></a>
+        <button type="button" class="btn btn-plain" data-close data-i18n="done">Done</button>
       </div>
     </div>
   </div>
@@ -397,6 +422,8 @@
 
   <script src="js/config.js"></script>
   <script src="js/messages.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/site.js"></script>
+  <script type="module" src="js/scene3d.js"></script>
 </body>
 </html>

@@ -41,7 +41,7 @@ test('customer message lists sizes, packs and empty cans', () => {
 
 test('dealer enquiry carries type, place and sizes; empty fields are left out', () => {
   assert.deepEqual(Object.keys(M.validateDealer({ name: 'A', phone: '9876543210', city: '', type: '' })).sort(), ['city', 'type']);
-  const text = M.dealerMessage({ name: 'Anbu', phone: '9876543210', city: 'Salem', type: 'Distributor', sizes: ['20l', '1l'], business: '' }, 'PD-D-101026-1234');
+  const text = M.dealerMessage({ name: 'Anbu', phone: '9876543210', city: 'Salem', type: 'distributor', sizes: ['20l', '1l'], business: '' }, 'PD-D-101026-1234');
   assert.match(text, /becoming a \*Distributor\*/);
   assert.match(text, /Town \/ District: Salem/);
   assert.match(text, /Sizes interested: 1 L, 20 L/);
@@ -51,4 +51,17 @@ test('dealer enquiry carries type, place and sizes; empty fields are left out', 
 test('WhatsApp link encodes the message, with or without a number', () => {
   assert.equal(M.whatsappUrl('+91 98765 43210', 'Hi & bye\n*x*'), 'https://wa.me/919876543210?text=Hi%20%26%20bye%0A*x*');
   assert.equal(M.whatsappUrl('', 'Hi'), 'https://wa.me/?text=Hi');
+});
+
+test('Tamil messages and errors', () => {
+  const errs = M.validateCustomer({ name: '', phone: '', address: 'x', qty: { '1l': 1 } }, 'ta');
+  assert.equal(errs.name, 'உங்கள் பெயரை உள்ளிடவும்');
+  const text = M.customerMessage({ name: 'ரவி', phone: '9876543210', address: 'ஈரோடு', qty: { '1l': 2, '20l': 1 } }, 'PD-O-1', 'ta');
+  assert.match(text, /தண்ணீர் ஆர்டர்/);
+  assert.match(text, /• 1 L – 2 பெட்டி \(12 பாட்டில் பெட்டி\)/);
+  assert.match(text, /• 20 L – 1 கேன்/);
+  assert.match(text, /டெலிவரி: முடிந்தவரை விரைவில்/);
+  const d = M.dealerMessage({ name: 'அன்பு', phone: '9876543210', city: 'சேலம்', type: 'distributor', sizes: ['20l'] }, '', 'ta');
+  assert.match(d, /\*விநியோகஸ்தர்\* ஆக/);
+  assert.doesNotMatch(d, /Ref:/);
 });
