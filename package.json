@@ -1,0 +1,9 @@
+{
+  "name": "ponni-drops-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ponni Drops packaged drinking water website (Sree Jeevan Minerals)",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}
